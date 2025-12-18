@@ -1,0 +1,37 @@
+🎨 HOW TO ADD YOUR BACKGROUND IMAGE
+=====================================
+
+SUPER SIMPLE - 2 STEPS:
+
+1. Save your background image as:
+   hero-bg.jpg
+
+2. Put it in the same folder as index.html
+
+That's it! Refresh the page and your image will appear! ✨
+
+---
+
+The image will show behind the text with a purple overlay.
+
+Your folder should look like:
+  📁 your-folder/
+    📄 index.html
+    📄 style.css  
+    📄 script.js
+    🖼️ hero-bg.jpg  ← YOUR IMAGE HERE
+    📄 other files...
+
+---
+
+ALTERNATIVE: Use an online image URL
+
+1. Open style.css
+2. Find line ~18 (the .hero section)
+3. Replace 'hero-bg.jpg' with your image URL:
+   
+   url('https://your-image-url.com/image.jpg')
+
+---
+
+Need help? Check BACKGROUND_SETUP.md for detailed instructions!

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live AQI - Nagpur City</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-wind"></i>
+                <span>Nagpur AQI Monitor</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#mapSection" class="nav-link">Map</a>
+                <a href="#stations" class="nav-link">Stations</a>
+            </div>
+            <button class="burger-btn" id="burgerBtn" title="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Sidebar Menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <button class="sidebar-item" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+                <span class="status-indicator" id="notificationStatus"></span>
+            </button>
+            <button class="sidebar-item" id="fullscreenBtn">
+                <i class="fas fa-expand"></i>
+                <span>Fullscreen Map</span>
+            </button>
+            <button class="sidebar-item" id="exportBtn">
+                <i class="fas fa-download"></i>
+                <span>Export Data</span>
+            </button>
+            <button class="sidebar-item" id="shareBtn">
+                <i class="fas fa-share-alt"></i>
+                <span>Share</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-btn" id="lightTheme" title="Light Mode">
+            <i class="fas fa-sun"></i>
+        </button>
+        <button class="theme-btn" id="darkTheme" title="Dark Mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero" id="home">
+        <div class="hero-content">
+            <h1>Live Air Quality Monitor</h1>
+            <h2>Nagpur, Maharashtra</h2>
+            <p class="hero-subtitle">Real-time air quality data across the city</p>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-wind"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">City Average AQI</div>
+                    <div class="stat-value" id="avgAQI">--</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Monitoring Stations</div>
+                    <div class="stat-value" id="stationCount">--</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">Last Updated</div>
+                    <div class="stat-value-small" id="lastUpdate">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section" id="mapSection">
+            <div class="section-header">
+                <h3><i class="fas fa-map"></i> Interactive AQI Map</h3>
+                <div class="map-controls">
+                    <select id="locationSelector" class="location-dropdown">
+                        <option value="">Select a location...</option>
+                    </select>
+                    <button class="refresh-btn-small" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Selected Location Details -->
+            <div id="selectedLocationDetails" class="selected-location-card" style="display: none;">
+                <div class="selected-location-header">
+                    <div class="selected-location-name">
+                        <i class="fas fa-map-pin"></i>
+                        <span id="selectedLocationName"></span>
+                    </div>
+                    <button class="close-selected" id="closeSelected">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="selected-location-content">
+                    <div class="selected-aqi-main">
+                        <div class="selected-aqi-value" id="selectedAQI">--</div>
+                        <div class="selected-aqi-status" id="selectedStatus">--</div>
+                    </div>
+                    <div class="selected-pollutants">
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">PM2.5</span>
+                            <span class="pollutant-value" id="selectedPM25">--</span>
+                        </div>
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">PM10</span>
+                            <span class="pollutant-value" id="selectedPM10">--</span>
+                        </div>
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">O₃</span>
+                            <span class="pollutant-value" id="selectedO3">--</span>
+                        </div>
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">NO₂</span>
+                            <span class="pollutant-value" id="selectedNO2">--</span>
+                        </div>
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">SO₂</span>
+                            <span class="pollutant-value" id="selectedSO2">--</span>
+                        </div>
+                        <div class="pollutant-item">
+                            <span class="pollutant-label">CO</span>
+                            <span class="pollutant-value" id="selectedCO">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="map"></div>
+            <div class="map-legend">
+                <div class="legend-title">AQI Scale</div>
+                <div class="legend-items-horizontal">
+                    <div class="legend-item-small good">
+                        <span class="legend-dot"></span>
+                        <span>0-50 Good</span>
+                    </div>
+                    <div class="legend-item-small moderate">
+                        <span class="legend-dot"></span>
+                        <span>51-100 Moderate</span>
+                    </div>
+                    <div class="legend-item-small unhealthy-sensitive">
+                        <span class="legend-dot"></span>
+                        <span>101-150 Unhealthy</span>
+                    </div>
+                    <div class="legend-item-small unhealthy">
+                        <span class="legend-dot"></span>
+                        <span>151-200 Unhealthy</span>
+                    </div>
+                    <div class="legend-item-small very-unhealthy">
+                        <span class="legend-dot"></span>
+                        <span>201-300 Very Unhealthy</span>
+                    </div>
+                    <div class="legend-item-small hazardous">
+                        <span class="legend-dot"></span>
+                        <span>301+ Hazardous</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locations Grid -->
+        <div class="locations-section" id="stations">
+            <div class="section-header">
+                <h3><i class="fas fa-list"></i> All Monitoring Stations</h3>
+            </div>
+            <div id="locationsGrid" class="locations-grid">
+                <div class="loading-locations">
+                    <div class="spinner"></div>
+                    <p>Loading stations...</p>
+                </div>
+            </div>
+            <div class="show-more-container" id="showMoreContainer" style="display: none;">
+                <button class="show-more-btn" id="showMoreBtn">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>Show More Stations</span>
+                    <span class="station-count"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Health Advisory -->
+        <div class="advisory-section">
+            <div class="section-header">
+                <h3><i class="fas fa-heartbeat"></i> Health Advisory</h3>
+            </div>
+            <div class="advisory-card" id="advisoryCard">
+                <div class="advisory-icon">💡</div>
+                <p id="healthAdvice">Loading health recommendations...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4><i class="fas fa-wind"></i> Nagpur AQI Monitor</h4>
+                    <p>Real-time air quality monitoring for a healthier Nagpur. Stay informed, stay safe.</p>
+                    <div class="footer-social">
+                        <a href="https://www.linkedin.com/in/harsh-mali-96961a234" target="_blank" title="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://www.instagram.com/_harsh043_?igsh=bXJkNm1nNWQ2ZXdo" target="_blank" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="tel:9322023539" title="Contact">
+                            <i class="fas fa-phone"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#mapSection">Interactive Map</a></li>
+                        <li><a href="#stations">Monitoring Stations</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://aqicn.org" target="_blank">WAQI Project</a></li>
+                        <li><a href="https://www.airnow.gov/aqi/aqi-basics/" target="_blank">Understanding AQI</a></li>
+                        <li><a href="https://www.epa.gov/pm-pollution" target="_blank">About PM2.5</a></li>
+                        <li><a href="https://www.who.int/health-topics/air-pollution" target="_blank">WHO Air Quality</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-user"></i> Harsh Mali</li>
+                        <li><i class="fas fa-phone"></i> <a href="tel:9322023539">9322023539</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Nagpur, Maharashtra</li>
+                        <li><i class="fas fa-envelope"></i> Developer Contact</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Nagpur AQI Monitor. Developed by <strong>Harsh Mali</strong></p>
+                <p>Data provided by World Air Quality Index Project | Updates every 30 minutes</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fullscreen Map Modal -->
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <button class="close-fullscreen" id="closeFullscreen">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="fullscreen-map-container">
+            <div id="fullscreenMap"></div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notification-content">
+            <div class="notification-icon" id="notificationIcon"></div>
+            <div class="notification-text">
+                <h4 id="notificationTitle"></h4>
+                <p id="notificationMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
