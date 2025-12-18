@@ -1086,10 +1086,9 @@ footer p:first-child {
         margin-top: 15px;
     }
     
-    /* Selected Location Card */
+    /* Selected Location Card - Hide on mobile */
     .selected-location-card {
-        padding: 20px;
-        margin-bottom: 15px;
+        display: none !important;
     }
     
     .selected-location-content {
@@ -1989,4 +1988,19 @@ body.dark-theme .show-more-btn {
     select {
         max-width: 100%;
     }
+}
+
+/* Fix Leaflet marker display */
+.leaflet-marker-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.custom-marker div {
+    pointer-events: auto;
 }

@@ -143,20 +143,21 @@ function createMarker(location, aqi) {
         className: 'custom-marker',
         html: `<div style="
             background: ${color};
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 14px;
-            border: 3px solid white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-size: 16px;
+            border: 4px solid white;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            font-family: 'Segoe UI', sans-serif;
         ">${aqi}</div>`,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
+        iconSize: [45, 45],
+        iconAnchor: [22, 22]
     });
     
     const marker = L.marker([location.lat, location.lon], { icon }).addTo(map);
