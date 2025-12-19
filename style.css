@@ -2004,3 +2004,47 @@ body.dark-theme .show-more-btn {
 .custom-marker div {
     pointer-events: auto;
 }
+
+/* AQI Filter Dropdown */
+.aqi-filter {
+    padding: 10px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    background: white;
+    color: #2d3748;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    min-width: 180px;
+}
+
+.aqi-filter:hover {
+    border-color: #667eea;
+}
+
+.aqi-filter:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+body.dark-theme .aqi-filter {
+    background: #000000;
+    color: #e2e8f0;
+    border-color: #333;
+}
+
+body.dark-theme .aqi-filter:hover,
+body.dark-theme .aqi-filter:focus {
+    border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+    .aqi-filter {
+        width: 100%;
+        font-size: 0.85rem;
+        padding: 10px 12px;
+        min-width: auto;
+    }
+}

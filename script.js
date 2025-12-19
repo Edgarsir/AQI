@@ -257,6 +257,43 @@ function updateUI() {
     renderLocations();
 }
 
+// Filter and sort stations
+let filteredStations = [];
+
+function filterStations(filterType) {
+    let filtered = [...stationsData];
+    
+    switch(filterType) {
+        case 'lowest':
+            filtered.sort((a, b) => a.aqi - b.aqi);
+            break;
+        case 'highest':
+            filtered.sort((a, b) => b.aqi - a.aqi);
+            break;
+        case 'good':
+            filtered = filtered.filter(s => s.aqi <= 50);
+            break;
+        case 'moderate':
+            filtered = filtered.filter(s => s.aqi > 50 && s.aqi <= 100);
+            break;
+        case 'unhealthy':
+            filtered = filtered.filter(s => s.aqi > 100);
+            break;
+        default:
+            // 'all' - no filtering
+            break;
+    }
+    
+    filteredStations = filtered;
+    displayedStations = 6; // Reset pagination
+    renderLocations(false);
+}
+
+// AQI Filter handler
+document.getElementById('aqiFilter').addEventListener('change', (e) => {
+    filterStations(e.target.value);
+});
+
 // Render locations with pagination
 function renderLocations(showAll = false) {
     const locationsGrid = document.getElementById('locationsGrid');
@@ -265,10 +302,13 @@ function renderLocations(showAll = false) {
     
     locationsGrid.innerHTML = '';
     
-    // Determine how many stations to show
-    const stationsToShow = (isMobile && !showAll) ? displayedStations : stationsData.length;
+    // Use filtered stations if available, otherwise use all
+    const dataToShow = filteredStations.length > 0 ? filteredStations : stationsData;
     
-    stationsData.slice(0, stationsToShow).forEach(station => {
+    // Determine how many stations to show
+    const stationsToShow = (isMobile && !showAll) ? displayedStations : dataToShow.length;
+    
+    dataToShow.slice(0, stationsToShow).forEach(station => {
         const aqiInfo = getAQIInfo(station.aqi);
         const color = getAQIColor(station.aqi);
         
@@ -314,12 +354,12 @@ function renderLocations(showAll = false) {
     });
     
     // Show/hide "Show More" button
-    if (isMobile && stationsData.length > displayedStations) {
+    if (isMobile && dataToShow.length > displayedStations) {
         showMoreContainer.style.display = 'block';
         const btn = document.getElementById('showMoreBtn');
-        const remaining = stationsData.length - stationsToShow;
+        const remaining = dataToShow.length - stationsToShow;
         
-        if (showAll || stationsToShow >= stationsData.length) {
+        if (showAll || stationsToShow >= dataToShow.length) {
             btn.querySelector('span:first-of-type').textContent = 'Show Less';
             btn.querySelector('.station-count').textContent = '';
             btn.classList.add('expanded');
@@ -337,6 +377,7 @@ function renderLocations(showAll = false) {
 document.getElementById('showMoreBtn').addEventListener('click', () => {
     const btn = document.getElementById('showMoreBtn');
     const isExpanded = btn.classList.contains('expanded');
+    const dataToShow = filteredStations.length > 0 ? filteredStations : stationsData;
     
     if (isExpanded) {
         // Show less - reset to initial count
@@ -347,7 +388,7 @@ document.getElementById('showMoreBtn').addEventListener('click', () => {
     } else {
         // Show more
         displayedStations += stationsPerLoad;
-        if (displayedStations >= stationsData.length) {
+        if (displayedStations >= dataToShow.length) {
             renderLocations(true);
         } else {
             renderLocations(false);
