@@ -259,11 +259,21 @@ function updateUI() {
 
 // Filter and sort stations
 let filteredStations = [];
+let searchQuery = '';
+let currentFilter = 'all';
 
-function filterStations(filterType) {
+function applyFiltersAndSearch() {
     let filtered = [...stationsData];
     
-    switch(filterType) {
+    // Apply search first
+    if (searchQuery) {
+        filtered = filtered.filter(station => 
+            station.location.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+    
+    // Then apply filter/sort
+    switch(currentFilter) {
         case 'lowest':
             filtered.sort((a, b) => a.aqi - b.aqi);
             break;
@@ -280,7 +290,7 @@ function filterStations(filterType) {
             filtered = filtered.filter(s => s.aqi > 100);
             break;
         default:
-            // 'all' - no filtering
+            // 'all' - no additional filtering
             break;
     }
     
@@ -288,6 +298,28 @@ function filterStations(filterType) {
     displayedStations = 6; // Reset pagination
     renderLocations(false);
 }
+
+function filterStations(filterType) {
+    currentFilter = filterType;
+    applyFiltersAndSearch();
+}
+
+// Search functionality
+const stationSearch = document.getElementById('stationSearch');
+const clearSearch = document.getElementById('clearSearch');
+
+stationSearch.addEventListener('input', (e) => {
+    searchQuery = e.target.value.trim();
+    clearSearch.style.display = searchQuery ? 'flex' : 'none';
+    applyFiltersAndSearch();
+});
+
+clearSearch.addEventListener('click', () => {
+    stationSearch.value = '';
+    searchQuery = '';
+    clearSearch.style.display = 'none';
+    applyFiltersAndSearch();
+});
 
 // AQI Filter handler
 document.getElementById('aqiFilter').addEventListener('change', (e) => {
@@ -303,7 +335,20 @@ function renderLocations(showAll = false) {
     locationsGrid.innerHTML = '';
     
     // Use filtered stations if available, otherwise use all
-    const dataToShow = filteredStations.length > 0 ? filteredStations : stationsData;
+    const dataToShow = (searchQuery || currentFilter !== 'all') ? filteredStations : stationsData;
+    
+    // Show no results message
+    if (dataToShow.length === 0) {
+        locationsGrid.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search" style="font-size: 3rem; color: #cbd5e0; margin-bottom: 15px;"></i>
+                <h3>No stations found</h3>
+                <p>Try adjusting your search or filter</p>
+            </div>
+        `;
+        showMoreContainer.style.display = 'none';
+        return;
+    }
     
     // Determine how many stations to show
     const stationsToShow = (isMobile && !showAll) ? displayedStations : dataToShow.length;

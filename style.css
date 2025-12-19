@@ -2048,3 +2048,139 @@ body.dark-theme .aqi-filter:focus {
         min-width: auto;
     }
 }
+
+/* Station Controls */
+.station-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 250px;
+}
+
+.search-container i.fa-search {
+    position: absolute;
+    left: 14px;
+    color: #718096;
+    pointer-events: none;
+}
+
+.station-search {
+    width: 100%;
+    padding: 10px 40px 10px 40px;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    background: white;
+    color: #2d3748;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.station-search:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.station-search::placeholder {
+    color: #a0aec0;
+}
+
+.clear-search {
+    position: absolute;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #e2e8f0;
+    border-radius: 50%;
+    color: #4a5568;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.clear-search:hover {
+    background: #cbd5e0;
+    color: #1a202c;
+}
+
+body.dark-theme .station-search {
+    background: #000000;
+    color: #e2e8f0;
+    border-color: #333;
+}
+
+body.dark-theme .station-search:focus {
+    border-color: #667eea;
+}
+
+body.dark-theme .search-container i.fa-search {
+    color: #a0aec0;
+}
+
+body.dark-theme .clear-search {
+    background: #1a202c;
+    color: #cbd5e0;
+}
+
+body.dark-theme .clear-search:hover {
+    background: #2d3748;
+    color: #f7fafc;
+}
+
+@media (max-width: 768px) {
+    .station-controls {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-container {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .station-search {
+        font-size: 0.85rem;
+        padding: 10px 36px 10px 36px;
+    }
+}
+
+/* No Results Message */
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.no-results p {
+    color: #718096;
+    font-size: 1rem;
+}
+
+body.dark-theme .no-results h3 {
+    color: #f7fafc;
+}
+
+body.dark-theme .no-results p {
+    color: #a0aec0;
+}
+
+body.dark-theme .no-results i {
+    color: #4a5568 !important;
+}
