@@ -84,8 +84,33 @@
     </div>
 
     <div class="container">
+        <!-- Quick Insights -->
+        <div class="quick-insights" id="quickInsights" style="display: none;">
+            <div class="insight-card best">
+                <i class="fas fa-smile"></i>
+                <div class="insight-content">
+                    <div class="insight-label">Best Air Quality</div>
+                    <div class="insight-value" id="bestStation">--</div>
+                </div>
+            </div>
+            <div class="insight-card worst">
+                <i class="fas fa-frown"></i>
+                <div class="insight-content">
+                    <div class="insight-label">Needs Attention</div>
+                    <div class="insight-value" id="worstStation">--</div>
+                </div>
+            </div>
+            <div class="insight-card weather">
+                <i class="fas fa-cloud-sun"></i>
+                <div class="insight-content">
+                    <div class="insight-label">Weather</div>
+                    <div class="insight-value" id="weatherInfo">--</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Stats Overview -->
-        <div class="stats-grid">
+        <div class="stats-grid"></div>
             <div class="stat-card">
                 <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <i class="fas fa-wind"></i>
@@ -220,6 +245,7 @@
                     </div>
                     <select id="aqiFilter" class="aqi-filter">
                         <option value="all">All Stations</option>
+                        <option value="favorites">⭐ Favorites</option>
                         <option value="lowest">Lowest AQI First</option>
                         <option value="highest">Highest AQI First</option>
                         <option value="good">Good (0-50)</option>

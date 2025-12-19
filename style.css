@@ -2184,3 +2184,152 @@ body.dark-theme .no-results p {
 body.dark-theme .no-results i {
     color: #4a5568 !important;
 }
+
+/* Favorite Button */
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    color: #cbd5e0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background: white;
+    color: #fbbf24;
+}
+
+.favorite-btn.active {
+    background: #fbbf24;
+    color: white;
+}
+
+.favorite-btn.active:hover {
+    background: #f59e0b;
+}
+
+body.dark-theme .favorite-btn {
+    background: rgba(45, 55, 72, 0.9);
+    color: #718096;
+}
+
+body.dark-theme .favorite-btn:hover {
+    background: #2d3748;
+    color: #fbbf24;
+}
+
+body.dark-theme .favorite-btn.active {
+    background: #fbbf24;
+    color: #1a202c;
+}
+
+/* Quick Insights */
+.quick-insights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+    animation: slideDown 0.5s ease;
+}
+
+.insight-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.insight-card i {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.insight-card.best i {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.insight-card.worst i {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.insight-card.weather i {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-label {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.insight-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+body.dark-theme .insight-card {
+    background: #000000;
+    border-color: #333;
+}
+
+body.dark-theme .insight-label {
+    color: #a0aec0;
+}
+
+body.dark-theme .insight-value {
+    color: #f7fafc;
+}
+
+@media (max-width: 768px) {
+    .quick-insights {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .insight-card {
+        padding: 16px;
+    }
+    
+    .insight-card i {
+        font-size: 1.5rem;
+        width: 45px;
+        height: 45px;
+    }
+}

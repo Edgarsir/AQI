@@ -227,6 +227,26 @@ async function fetchAQIData() {
 let displayedStations = 6; // Show 6 stations initially on mobile
 const stationsPerLoad = 6;
 
+// Favorites management
+let favorites = JSON.parse(localStorage.getItem('favoriteStations')) || [];
+
+function toggleFavorite(stationName) {
+    const index = favorites.indexOf(stationName);
+    if (index > -1) {
+        favorites.splice(index, 1);
+        showNotification('Removed from Favorites', `${stationName} removed`, 'info');
+    } else {
+        favorites.push(stationName);
+        showNotification('Added to Favorites', `${stationName} saved`, 'success');
+    }
+    localStorage.setItem('favoriteStations', JSON.stringify(favorites));
+    renderLocations(displayedStations >= (filteredStations.length || stationsData.length));
+}
+
+function isFavorite(stationName) {
+    return favorites.includes(stationName);
+}
+
 // Update UI with data
 function updateUI() {
     if (stationsData.length === 0) return;
@@ -253,8 +273,45 @@ function updateUI() {
     // Check for AQI alerts
     checkAQIAlert(avgAQI);
     
+    // Update quick insights
+    updateQuickInsights();
+    
+    // Fetch weather
+    fetchWeather();
+    
     // Render locations
     renderLocations();
+}
+
+// Update quick insights
+function updateQuickInsights() {
+    const bestStation = stationsData.reduce((min, station) => 
+        station.aqi < min.aqi ? station : min
+    );
+    const worstStation = stationsData.reduce((max, station) => 
+        station.aqi > max.aqi ? station : max
+    );
+    
+    document.getElementById('bestStation').textContent = `${bestStation.location} (${bestStation.aqi})`;
+    document.getElementById('worstStation').textContent = `${worstStation.location} (${worstStation.aqi})`;
+    document.getElementById('quickInsights').style.display = 'grid';
+}
+
+// Fetch weather data
+async function fetchWeather() {
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Nagpur&appid=demo&units=metric`);
+        if (response.ok) {
+            const data = await response.json();
+            const temp = Math.round(data.main.temp);
+            const desc = data.weather[0].main;
+            document.getElementById('weatherInfo').textContent = `${temp}°C, ${desc}`;
+        } else {
+            document.getElementById('weatherInfo').textContent = 'Weather unavailable';
+        }
+    } catch (error) {
+        document.getElementById('weatherInfo').textContent = 'Weather unavailable';
+    }
 }
 
 // Filter and sort stations
@@ -274,6 +331,9 @@ function applyFiltersAndSearch() {
     
     // Then apply filter/sort
     switch(currentFilter) {
+        case 'favorites':
+            filtered = filtered.filter(s => isFavorite(s.location));
+            break;
         case 'lowest':
             filtered.sort((a, b) => a.aqi - b.aqi);
             break;
@@ -356,12 +416,16 @@ function renderLocations(showAll = false) {
     dataToShow.slice(0, stationsToShow).forEach(station => {
         const aqiInfo = getAQIInfo(station.aqi);
         const color = getAQIColor(station.aqi);
+        const isFav = isFavorite(station.location);
         
         const card = document.createElement('div');
         card.className = 'location-card';
         card.style.setProperty('--aqi-color', color);
         
         card.innerHTML = `
+            <button class="favorite-btn ${isFav ? 'active' : ''}" data-station="${station.location}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">
+                <i class="fas fa-star"></i>
+            </button>
             <div class="location-header">
                 <div class="location-name">
                     <i class="fas fa-map-marker-alt" style="color: ${color}"></i>
@@ -386,6 +450,14 @@ function renderLocations(showAll = false) {
             </div>
         `;
         
+        // Favorite button handler
+        const favBtn = card.querySelector('.favorite-btn');
+        favBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavorite(station.location);
+        });
+        
+        // Card click handler
         card.addEventListener('click', () => {
             map.setView([station.lat, station.lon], 14);
             const marker = markers.find(m => 
